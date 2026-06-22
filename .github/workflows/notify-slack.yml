@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+  workflow_dispatch:
 jobs:
   notify:
     runs-on: ubuntu-latest
@@ -11,7 +12,7 @@ jobs:
       - name: Post naar Slack
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          COMMIT_MSG: ${{ github.event.head_commit.message || '🧪 Handmatige test van de Slack-melding' }}
         run: |
           TEXT=$(printf '📊 *Nieuwe AI-nieuws editie staat klaar!*\n%s\n→ https://timguest.github.io/ai-nieuws-site/' "$COMMIT_MSG")
           payload=$(jq -n --arg t "$TEXT" '{text:$t}')
