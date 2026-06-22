@@ -1,0 +1,18 @@
+name: Slack-melding bij nieuwe editie
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post naar Slack
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+        run: |
+          TEXT=$(printf '📊 *Nieuwe AI-nieuws editie staat klaar!*\n%s\n→ https://timguest.github.io/ai-nieuws-site/' "$COMMIT_MSG")
+          payload=$(jq -n --arg t "$TEXT" '{text:$t}')
+          curl -s -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK"
